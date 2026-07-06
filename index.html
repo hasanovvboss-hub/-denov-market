@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Denov Market</title>
+    <style>
+        /* 1. UMUMIY KO'RINISH */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: sans-serif; background-color: #f2f4f7; color: #1f1f1f; }
+        .container { max-width: 1240px; margin: 0 auto; padding: 0 20px; }
+        
+        /* 2. ENG YUQORI KICHIK MENYU (TOP BAR) */
+        .top-bar { background-color: #eaf0f6; font-size: 13px; color: #555f7d; padding: 10px 0; position: relative; }
+        .top-bar-box { display: flex; justify-content: space-between; align-items: center; }
+        .location-selector { display: flex; align-items: center; gap: 5px; cursor: pointer; }
+        .burger-top { font-weight: bold; color: #7000ff; margin-right: 5px; }
+        .top-menu a { text-decoration: none; color: #555f7d; margin-left: 20px; }
+
+        /* MANZIL QIDIRUV OYNASI */
+        .location-dropdown { position: absolute; top: 38px; left: 20px; background: white; border: 1px solid #cbd5e0; border-radius: 12px; box-shadow: 0 15px 35px rgba(0,0,0,0.15); width: 380px; z-index: 999; display: none; padding: 15px; }
+        .location-dropdown.show { display: block; }
+        .dropdown-search { width: 100%; padding: 10px; border: 2px solid #7000ff; border-radius: 8px; outline: none; margin-bottom: 12px; }
+        .points-list { max-height: 200px; overflow-y: auto; list-style: none; }
+        .point-item { padding: 10px; font-size: 13px; cursor: pointer; border-radius: 6px; background: #f8fafc; margin-bottom: 4px; border: 1px solid #edf2f7; }
+        .point-item:hover { background: #f0e6ff; color: #7000ff; }
+        .no-result { font-size: 13px; color: #a0aec0; text-align: center; padding: 10px; display: none; }
+
+        /* 3. ASOSIY NAVIGATSIYA PANEL (MAIN NAV) */
+        .main-nav { padding: 20px 0; background: white; border-bottom: 1px solid #eaf0f6; }
+        .nav-box { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+        .logo { font-size: 26px; font-weight: bold; color: #7000ff; cursor: pointer; }
+        .logo span { color: #00b050; }
+        .catalog-btn { background: #eef2ff; color: #7000ff; border: none; padding: 12px 24px; font-size: 15px; font-weight: bold; border-radius: 8px; cursor: pointer; }
+        .search-box { display: flex; flex-grow: 1; border: 2px solid #7000ff; border-radius: 8px; overflow: hidden; }
+        .search-box input { width: 100%; padding: 12px; border: none; outline: none; font-size: 15px; }
+        .search-btn { background: #7000ff; border: none; padding: 0 20px; color: white; cursor: pointer; font-size: 16px; }
+        .actions { display: flex; gap: 25px; font-size: 14px; }
+        .action-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; position: relative; }
+        .badge { position: absolute; top: -5px; right: -5px; background: red; color: white; padding: 2px 6px; border-radius: 50%; font-size: 11px; display: none; }
+        
+        /* 4. KATEGORIYALAR PANELI */
+        .categories-bar { padding: 15px 0; background: white; border-bottom: 1px solid #f2f4f7; }
+        .cat-box { display: flex; justify-content: space-between; font-size: 14px; }
+        .cat-box a { text-decoration: none; color: #718096; font-weight: 500; }
+
+        /* 5. SUPER CHEGIRMALAR BANNERI */
+        .hero-banner { background: linear-gradient(135deg, #7000ff, #8c33ff); border-radius: 16px; padding: 50px; color: white; margin: 20px 0 30px 0; }
+        .banner-badge { background: rgba(255,255,255,0.2); padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; display: inline-block; margin-bottom: 15px; }
+        .hero-banner h1 { font-size: 38px; margin-bottom: 10px; font-weight: bold; }
+        .hero-banner p { font-size: 16px; opacity: 0.9; }
+
+        /* YANGI: KAFOLATLANGAN XARITA DIZAYNI */
+        .delivery-map-container { background: white; padding: 20px; border-radius: 12px; margin: 20px 0; border: 1px solid #eaf0f6; }
+        .info-box { background: #eef7ee; padding: 12px; border-left: 5px solid #4caf50; margin-bottom: 15px; font-size: 14px; border-radius: 0 4px 4px 0; }
+        .map-submit-btn { background-color: #4caf50; color: white; border: none; padding: 12px 15px; font-size: 16px; border-radius: 5px; cursor: pointer; width: 100%; font-weight: bold; }
+
+        /* 6. MAHSULOTLAR GRID TIZIMI */
+        .grid-title { font-size: 24px; font-weight: bold; margin-bottom: 20px; }
+        .uzum-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 40px; }
+        .uzum-card { background: white; border-radius: 12px; padding: 15px; border: 1px solid #f2f4f7; display: flex; flex-direction: column; justify-content: space-between; height: 380px; cursor: pointer; }
+        .card-img { background: #f6f8fa; height: 180px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 60px; }
+        .card-name { font-size: 14px; margin: 10px 0; height: 40px; overflow: hidden; color: #2d3748; }
+        .price-box { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
+        .price { font-size: 16px; font-weight: bold; color: #1a202c; }
+        .cart-add-btn { background: none; border: 1px solid #e2e8f0; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+
+        /* 7. KATTA FUTER (PODVAL) */
+        footer { background-color: #f4f6fa; padding: 45px 0; margin-top: 60px; border-top: 1px solid #eaf0f6; }
+        .footer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+        .footer-col h4 { margin-bottom: 18px; font-size: 16px; font-weight: bold; color: #1a202c; }
+        .footer-col p { font-size: 14px; color: #4a5568; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+    <!-- 1. ENG YUQORI KICHIK MENYU -->
+    <div class="top-bar">
+        <div class="container top-bar-box">
+            <div class="location-selector" onclick="toggleDropdown(event)">
+                <span class="burger-top">☰</span>
+                <div>📍 Shahar: <span id="current-city" class="selected-city-text">Denov</span> | Topshirish punktlari</div>
+            </div>
+            
+            <div id="location-menu" class="location-dropdown" onclick="event.stopPropagation()">
+                <input type="text" id="street-search" class="dropdown-search" placeholder="Ko'cha yoki mahalla nomini yozing..." onkeyup="filterStreets()">
+                <ul class="points-list" id="streets-list">
+                    <li class="point-item" onclick="selectStreet('Pravda (Sassiqko\'l)')">🛰️ Pravda (Sassiqko'l) hududi</li>
+                    <li class="point-item" onclick="selectStreet('Mustaqillik ko\'chasi')">🏢 Mustaqillik ko'chasi</li>
+                    <li class="point-item" onclick="selectStreet('Sharaf Rashidov ko\'chasi')">🏪 Sharaf Rashidov (Bozor)</li>
+                    <li class="point-item" onclick="selectStreet('Alisher Navoiy ko\'chasi')"> Adil (Vokzal)</li>
+                </ul>
+                <div id="no-match" class="no-result">Bunday joy topilmadi 😕</div>
+            </div>
+
+            <div class="top-menu">
+                <a href="#">Sotuvchi bo'lish</a>
+                <a href="#">Savol-javob</a>
+                <a href="#">Buyurtmalarim</a>
+                <a href="#">🌐 O'zbekcha</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. NAVIGATSIYA PANEL -->
+    <nav class="main-nav">
+        <div class="container nav-box">
+            <div class="logo" onclick="location.reload()">Denov<span>Market</span></div>
+            <button class="catalog-btn">☰ Katalog</button>
+            <div class="search-box">
+                <input type="text" placeholder="Mahsulotlar va turkumlarni izlash...">
+                <button class="search-btn">🔍</button>
+            </div>
+            <div class="actions">
+                <div class="action-item">👤 Kirish</div>
+                <div class="action-item">❤️ Sevimli</div>
+                <div class="action-item">🛒 Savat <span id="savat-badge" class="badge">0</span></div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 3. KATEGORIYALAR PANELI -->
+    <div class="categories-bar">
+        <div class="container cat-box">
+            <a href="#" style="color: #ff3b30; font-weight: bold;">🔥 Chegirmalar</a>
+            <a href="#">Elektronika</a>
+            <a href="#">Maishiy texnika</a>
+            <a href="#">Kiyim</a>
+            <a href="#">Poyabzal</a>
+            <a href="#">Aksessuarlar</a>
+            <a href="#">Go'zallik</a>
+            <a href="#">Bolalar</a>
+            <a href="#">Uy uchun</a>
+            <a href="#">Sport</a>
+            <a href="#">Kitoblar</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- 4. REKLAMA BANNERI -->
+        <div class="hero-banner">
+            <span class="banner-badge">🍋 Super chegirmalar</span>
+            <h1>Chegirmalar 50% gacha</h1>
+            <p>Har kuni minglab mahsulotlar. Tez yetkazib berish</p>
+        </div>
+
+        <!-- SIZ SO'RAGAN XARITA BLOKI - RASM KO'RINISHIDA (XATO BERMAYDI) -->
+        <div class="delivery-map-container">
+            <h3 style="margin-bottom: 5px; color: #333;">Yetkazib berish punktini tanlang (Faqat Denov)</h3>
+            <p style="color: #666; font-size: 14px; margin-top: 0; margin-bottom: 15px;">
+                Xaritadan kerakli joyni bosing yoki markerni sudrab nuqtani belgilang.
+            </p>
+            
+            <!-- Xarita o'rniga chiroyli sun'iy yo'ldoshli grafik rasm -->
